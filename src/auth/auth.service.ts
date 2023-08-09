@@ -4,6 +4,8 @@ import {sign, verify} from "jsonwebtoken";
 import {config} from "../config/config";
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
+import {ForbiddenError, AuthenticationError} from "apollo-server-core";
+import {errorHandler} from "../error/handle.error";
 
 export class AuthService {
     public static async getAll() {
@@ -11,19 +13,16 @@ export class AuthService {
     }
 
     public static async getUser (token: string) {
-        if (!token || token === '') {
-            return null;
-        }
-        let decodedToken;
+        let user = null;
         try {
-            decodedToken = verify(token, config.JWT_SECRET_KEY);
+            user = verify(token, config.JWT_SECRET_KEY);
         } catch {
-            return null;
+            throw new ForbiddenError(
+                'The user belonging to this token no logger exist'
+            );
         }
-        if (!decodedToken) {
-            return null;
-        }
-        return decodedToken;
+
+        return user;
     }
 
     public static async create({user}) {
@@ -52,7 +51,7 @@ export class AuthService {
                 qrCodeUrl: qrcode,
             };
         } catch (err) {
-            throw err;
+            throw errorHandler(err);
         }
     }
 
@@ -66,7 +65,7 @@ export class AuthService {
             return true;
         }
         catch (err){
-            console.log('error update', err)
+            throw errorHandler(err);
         }
     }
 
@@ -77,7 +76,7 @@ export class AuthService {
     public static async login ({user}) {
         const userByEmail: any = await User.findOne({ email: user.email });
         if (!userByEmail) {
-            throw new Error('User does not exist!');
+            throw new AuthenticationError('User does not exist!');
         }
 
         const isValidCode = speakeasy.totp.verify({
@@ -87,11 +86,11 @@ export class AuthService {
         });
 
         if (!isValidCode) {
-            throw new Error('Secret is incorrect!');
+            throw new AuthenticationError('Secret is incorrect!');
         }
         const isEqual = await compare(user.password, userByEmail.password);
         if (!isEqual) {
-            throw new Error('Password is incorrect!');
+            throw new AuthenticationError('Password is incorrect!');
         }
         const token = sign(
             { userId: userByEmail.id, email: userByEmail.email },
