@@ -9,12 +9,24 @@ export class AuthTypeDef {
     password: String!
     }
     
+    type CreatedUser {
+    id: String!
+    secret: String!
+    qrCodeUrl: String!
+    }
+    
     type Login {
     userId: String!
     token: String!
     }
     
     input UserInput {
+    email: String!
+    password: String!
+    secretKey: String!
+    }
+    
+    input RegisterUserInput {
     email: String!
     password: String!
     }
@@ -30,7 +42,7 @@ export class AuthTypeDef {
     }
     
     type Mutation {
-    create(user: UserInput): Boolean!
+    create(user: RegisterUserInput!): CreatedUser!
     changePassword(user: UserUpdateInput): Boolean!
     }
     `;
