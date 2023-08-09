@@ -13,8 +13,16 @@ const handleValidationError = (error) => {
     );
 };
 
+export const handleError = (message: string, code: string) => {
+    throw new ApolloError(
+        message,
+        code
+    );
+};
+
 export const errorHandler = (err) => {
     if (err.name === 'CastError') handleCastError(err);
     if (err.name === 'ValidationError') handleValidationError(err);
+    if (err.name === 'ForbiddenError') handleError(err.message, 'FORBIDDEN_ERROR');
     throw err;
 };
