@@ -1,13 +1,13 @@
-export class AuthService {
-    private static users = [{
-        name: 'sham'
-    },{
-        name: 'sham 1'
-    },{
-        name: 'sham 2'
-    }];
+import UserSchema from "./entities/user.entity";
+import * as crypto from 'crypto';
 
-    public static getAll () {
-        return this.users;
+export class AuthService {
+    public static async getAll () {
+        return UserSchema.find();
+    }
+
+    public static async create (): Promise<boolean> {
+        await UserSchema.create({email: crypto.randomUUID(), password: 'pass'});
+        return true;
     }
 }

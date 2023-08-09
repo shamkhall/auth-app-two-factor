@@ -3,8 +3,13 @@ import {AuthService} from "./auth.service";
 export class AuthResolver {
     public static resolver = {
         Query: {
-            getAll() {
-                return AuthService.getAll();
+            async getAll() {
+                return await AuthService.getAll();
+            }
+        },
+        Mutation: {
+            async create() {
+                return AuthService.create();
             }
         }
     }
