@@ -1,4 +1,5 @@
 import {AuthService} from "../auth.service";
+import {isLoggedInMiddleware} from "../../middleware/is-logged-in.middleware";
 
 export class MutationResolver {
     public static mutation = {
@@ -9,7 +10,8 @@ export class MutationResolver {
         }> {
             return await AuthService.create(args);
         },
-        async changePassword(_, args) {
+        async changePassword(_, args, { req, authUserMiddleware }) {
+            await isLoggedInMiddleware(req, authUserMiddleware);
             return AuthService.changePassword(args);
         }
     }
