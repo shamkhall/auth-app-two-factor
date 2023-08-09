@@ -1,7 +1,7 @@
 {
   "name": "auth-app-two-factor",
   "version": "1.0.0",
-  "description": "Two factor authentication and autherization APP",
+  "description": "Two factor authentication and authorization APP",
   "main": "dist/main.js",
   "scripts": {
     "start": "tsc & node dist/main.js",
